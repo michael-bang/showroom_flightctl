@@ -1,4 +1,9 @@
-* xref:index.adoc[Edge lab demo]
+#* xref:index.adoc[Edge lab demo]
+#* xref:test.adoc[Test]
+
+* xref:module-01.adoc[]
+* xref:module-02.adoc[]
+* xref:module-03.adoc[]
 
 .Workshop guide
 * xref:device-management.adoc[Device management]

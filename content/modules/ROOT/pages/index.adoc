@@ -1,8 +1,36 @@
 = Edge lab demo
-:navtitle: Edge lab demo
+#:navtitle: Edge lab demo
 
 A hands-on workshop using https://github.com/flightctl[FlightCtl] to control a fleet of virtual "devices".
 
+In this lab, we’ll explore Flight Control (Red Hat Edge Manager), a solution designed to deliver simple, scalable, and secure management of edge devices and applications. 
+With Flight Control, you declare the desired operating system image, host configuration and set of applications to run on a single device or an entire fleet of devices.
+
+Flight Control distributes these specifications to managed devices, where a local agent executes configuration changes, 
+monitors system health and reports status back to a centralized control plane. Each device’s real-world state is 
+evaluated against its declared configuration and, when drift is detected, Flight Control automatically initiates corrective 
+actions to return the device to a validated, compliant state. This ensures consistent, deterministic and resilient edge 
+operations even in highly distributed, low-touch environments.
+
+NOTE: Flight Control is the upstream open-source project and is freely available for anyone to explore and/or contribute to. Red Hat Edge Manager (RHEM) is the downstream, 
+supported offering. This lab, is based on Flight Control should be treated as functionally equivalent to Edge Manager. In the rest of this lab
+we will use the term Edge Manger interchangeably for Flight Control and Red Hat Edge Manager.
+
+
+== Lab Layout
+In this lab you will be utilizing the following Red Hat software components:
+
+* Red Hat OpenShift
+
+* Gitea Operator
+
+* Red Hat OpenShift Virtualization (OCP-Virt)
+
+* 3x OCP-Virt Virtual Machines
+
+* Edge Manager
+
+image::lab-layout-1.png[link=self, window=blank, width=100%]
 == Introduction
 
 == Key Concepts
