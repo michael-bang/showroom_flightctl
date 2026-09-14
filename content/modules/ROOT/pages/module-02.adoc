@@ -28,6 +28,9 @@ any devices yet. We will come back later to our lab-srv1 device and add the labe
 +
 . Click *Next* to continue.
 
+[#fleetconfiguration]
+=== Fleet Configuration
+
 The first change we can do through the Fleet is to update the operating system with a version of an image mode image. This feature could
 be used to have one image installed on the device when you intially provision it eg. by your hardware dealer and then change it to the version
 with the needed tools through the Fleet configuration. In this case we will keep the same image as is already installed on the device.
@@ -50,6 +53,9 @@ image::m2-create-fleet-configuration.png[link=self, window=blank, width=100%]
 We will come back to adding an application later.
 +
 . Leave the rest as it is and press the *Next* button
+
+[#fleetupdates]
+=== Fleet Update policies
 
 The updates part of the Fleet configuration provides you with functionality to *Use basic configuration* which will roll out any change
 to the Fleet as soon as the edge manager agent does its next update. This is great if you want to roll out updates as soon as possible, but might
@@ -89,19 +95,40 @@ image::m2-lab-fleet-created.png[link=self, window=blank, width=100%]
 [#fleetmembership]
 == Fleet Membership 
 
-. Return to your Edge Manager UI browser tab and Click *Details*
+In this section you will be adding the *edgesrv2* device to the *lab-fleet*.
+
+. Return to your Edge Manager and Click *Devices*
 +
-image::m3-join-fleet-.5.png[link=self, window=blank, width=100%]
+image::m2-device-list.png[link=self, window=blank, width=100%]
 +
-. Click *Add label*
+. Click on the 3 dots next to the *edgesrv2*
 +
-image::m3-join-fleet-1.png[link=self, window=blank, width=100%]
+image::m2-edgesrv2-device1.png[link=self, window=blank, width=100%]
 +
-. Highlight `key=value`, type `fleet=lab` then press *Enter*
+. And press the *Edit device configurations*
 +
-.. Observe that the device joins the `lab-fleet` almost immediately
+image::m2-edgesrv2-device2.png[link=self, window=blank, width=100%]
 +
-image::m3-join-fleet-2.png[link=self, window=blank, width=100%]
+. Click *Add label* under Device labels
+. Replace the *key=value* with *fleet=lab-fleet*
++
+image::m2-edgesrv2-device3.png[link=self, window=blank, width=100%]
++
+You can now see that the label has ensured that the device will become part of the *lab-fleet* that you created earlier in this module
++
+. Click *Next* to come to the *Review and Save* tab
++
+image::m2-edgesrv2-device4.png[link=self, window=blank, width=100%]
++
+You can see that a device label has been added to the fleet configuration.
++
+. Click *Save* to finish the update
++
+The update status of the device will change from *Out-of-date*
++
+image::m2-edgesrv2-device5.png[link=self, window=blank, width=100%]
++
+To *Updating* and then *Up-to-date*
 +
 [NOTE]
 ====
@@ -110,33 +137,52 @@ The agent on the device has checked in. Because the device’s *current configur
 This reconciliation is initiated by the device agent and occurs without manual intervention.
 ====
 +
-. Note that the device *Update status* changes from *Out-of-date* to *Updating*, indicating that the device is pulling and applying the `Lab` application defined by the fleet.
+image::m2-edgesrv2-device6.png[link=self, window=blank, width=100%]
 +
-image::m3-join-fleet-3.png[link=self, window=blank, width=100%]
+In the *Configurations* section of the *edgesrv2* you will now see that *update-motd* is now applied to the device
 +
-. Scroll to the bottom of the page and observe:
+image::m2-edgesrv2-device7.png[link=self, window=blank, width=100%]
 +
-.. The `lab-app` application has been successfully provisioned and is in a *Running* state
-.. The `update-motd` configuration source is present and being tracked, indicating that system configuration content defined by the fleet is actively managed on the device
-.. The `chronyd.service` system service is being tracked and is currently *Enabled*, *Loaded*, and *Active (running)*
+Lets check that the *Message Of The Day* has been updated on the device
+. Click on the *Terminal* tab of the device
+. Type *cat /etc/motd* and press *Enter*
 +
-image::m3-join-fleet-4.png[link=self, window=blank, width=100%]
+image::m2-edgesrv2-device8.png[link=self, window=blank, width=100%]
 +
-. *Scroll Up* to the top of the page and Click *Terminal*
+The *Message Of The Day* has been successfully updated on the device.
+
+[#fleetoverview]
+=== Fleet overview
+
+One thing is that we can see the update from the device standpoint, but if we have a lot of devices it would be great to see the information
+from the stand point of the *Fleet*
+
+. Click *Fleets* and then click on the *lab-fleet*
 +
-Let's run a few commands to re-examine the device 
+image::m2-fleet1.png[link=self, window=blank, width=100%]
 +
-.Examine the Message of the Day (MOTD)
-[source,sh,role=wrap execute,subs=attributes+]
-----
-cat /etc/motd
-----
-+
-.Sample Output
-[source,text,role=wrap]
-----
-Today is a good day to deliver pizza!
-----
+From the overview there is a number of information that we can see. 
+First we have the source. Here is the listed the sources that are being. In our case it is the *update-motd*.
+Second we can see how many devices of the total amount in the *Fleet* that is *Up-to-date*. In our case the one device that is part of the
+fleet is up-to-date. 
+There is also three charts showing *Application status*, *Device status* and *Update status*
+
+NOTE: Sources are different applications and configurations that are synchronized to the devices in the *Fleet*
+
+[#addingapplication]
+=== Adding an application 
+Although updating *Message Of The Day* is great and shows that we can manage files at scale on a number of devices it would be great
+to be able to add an application to the device.
+
+Applications can be added through a Fleet in a number of ways. We will be adding a container based application to the device through the Fleet in 
+This section.
+
+NOTE: If you want to add a RPM based application to a device then you need to update the Image Mode image with the new application and distribute that through the operating system update
+part that we skipped in the prior section
+
+
+
+
 +
 .Verify that the lab container is running
 [source,sh,role=wrap execute,subs=attributes+]
@@ -375,364 +421,6 @@ image::m3-resource-sync-9.png[link=self, window=blank, width=100%]
 
 We have just proven that editing the fleet YAML in Gitea automatically propagates changes to Edge Manager
 
-=== Monitoring Resource Sync Events
-
-In a a moment, we’ll start adding more substance to this fleet by introducing *Configuration* and *Application* entries into the fleet YAML
-
-. Before making these changes, let’s prepare to monitor the Edge Manager periodic logs:
-+
-.Return to your Terminal 1 session (beside your lab manual) and examine the Edge Manager microservices 
-[source,sh,role=wrap execute,subs=attributes+]
-----
-sudo systemctl list-units flightctl-*.service
----- 
-+
-.Sample Output
-[source,text]
-----
-  UNIT                                 LOAD   ACTIVE SUB     DESCRIPTION                                             
-  flightctl-alert-exporter.service     loaded active running Flight Control Alert Exporter service
-  flightctl-alertmanager-proxy.service loaded active running Flight Control Alertmanager Proxy service
-  flightctl-alertmanager.service       loaded active running Flight Control Alertmanager service
-  flightctl-api-init.service           loaded active exited  Flight Control API Initialization
-  flightctl-api.service                loaded active running Flight Control API server
-  flightctl-certs-init.service         loaded active exited  Flight Control Certificates Initialization
-  flightctl-cli-artifacts-init.service loaded active exited  Flight Control CLI Artifacts Certificates Initialization
-  flightctl-cli-artifacts.service      loaded active running Flight Control CLI Artifacts service
-  flightctl-db-migrate.service         loaded active exited  Flight Control Database Migration service
-  flightctl-db-users-init.service      loaded active exited  Flight Control Database Users Initialization
-  flightctl-db-wait.service            loaded active exited  Flight Control Database Wait
-  flightctl-db.service                 loaded active running Flight Control Database service
-  flightctl-kv.service                 loaded active running Flight Control Key Value service
-  flightctl-network.service            loaded active exited  flightctl-network.service
-  flightctl-pam-issuer.service         loaded active running Flight Control PAM OIDC Issuer server
-  flightctl-periodic.service           loaded active running Flight Control Periodic service
-  flightctl-ui-init.service            loaded active exited  Flight Control UI Initialization
-  flightctl-ui.service                 loaded active running Flight Control UI
-  flightctl-worker.service             loaded active running Flight Control Worker service
-<...>
-----
-+
-. We want to monitor events from the *flightctl-periodic.service*, which (among other things) is responsible for processing Git resource syncs
-+
-.Run the following command to follow the flightctl-periodic.service logs and filter for resource sync (user-rs) events
-[source,sh,role=execute wrap,subs=attributes+]
-----
-sudo journalctl -u flightctl-periodic.service -f | grep user-rs
----- 
-
-Next, we’ll make another update to the fleet YAML in Gitea
-
-. Return to your gitea browser tab and click the *Edit (pencil*) icon
-+
-image::m3-resource-sync-10.png[link=self, window=blank, width=100%]
-+
-. Click and drag to highlight the `applications:` and `config:` sections within the `spec:` block
-+
-image::m3-resource-sync-11.png[link=self, window=blank, width=100%]
-+
-. Press *Backspace* to remove the highlighted `applications:` and `config:` entries
-+
-image::m3-resource-sync-12.png[link=self, window=blank, width=100%]
-+
-.Copy the following *applications:* and *config:* specs to your clipboard  
-[source,sh,role=execute,subs=attributes+]
-----
-      applications:
-        - appType: quadlet
-          envVars: {}
-          inline:
-            - path: drone-tracker.container
-              content: |-
-                spec:
-                  applications:
-                    - name: drone-tracker-nginx
-                      appType: quadlet
-                      inline:
-                        - path: app.container
-                          content: |
-                            [Container]
-                            Image=docker.io/library/nginx:1.25
-                            Exec=nginx -g "daemon off;"
-                            PublishPort=8080:80
-                            Volume=/etc/drone-tracker:/usr/share/nginx/html:ro,Z
-                            
-                            [Service]
-                            Restart=on-failure
-                            RestartSec=20
-
-                            [Install]
-                            WantedBy=default.target
-              contentEncoding: plain
-          name: drone-tracker-app
-          volumes: []
-      config:
-        - name: drone-tracker-web-content
-          gitRef:
-            path: /kiosk/content/flight-conditions-{{ .metadata.labels.weather }}
-            repository: user-repo
-            targetRevision: main
-----
-+
-. Paste the YAML in the gitea editor and ensure that the YAML is correctly indented and matches the formatting shown in the screenshot
-+
-image::m3-resource-sync-13.png[link=self, window=blank, width=100%]
-+
-. Scroll down and click *Commit changes*
-+
-image::m3-resource-sync-14.png[link=self, window=blank, width=100%]
-
-Switch back to your `Terminal 1` window (beside your lab manual) and wait for the next resource-sync log event.
-
-.Note the log entries indicating that the resource-sync changes were applied successfully
-[source,text]
-----
-{...}
-Jan 02 12:58:49 rhem-on-rhel.wksp-xt8pt-1-user1.svc.cluster.local flightctl-periodic[3025]: time="2026-01-02T17:58:49Z" level=info msg="Resource user-rs: applying 1 fleets " func="github.com/flightctl/flightctl/internal/tasks.(*ResourceSync).SyncFleets" file="/app/internal/tasks/resourcesync.go:202" pkg=resource-sync request_id=resource-sync/ZHcRLvhr3S-001829
-Jan 02 12:58:49 rhem-on-rhel.wksp-xt8pt-1-user1.svc.cluster.local flightctl-periodic[3025]: time="2026-01-02T17:58:49Z" level=info msg="Resource user-rs: 1 fleets applied successfully\n" func="github.com/flightctl/flightctl/internal/tasks.(*ResourceSync).SyncFleets" file="/app/internal/tasks/resourcesync.go:225" pkg=resource-sync request_id=resource-sync/ZHcRLvhr3S-001829
-{...}
-----
-(Press `CTRL-C` to stop following the resource-sync logs.)
-
-Return to your Edge Manager UI browser tab
-
-. Since the fleet is Git-managed, it cannot be edited directly. Select the *Actions* drop-down menu
-.. Click *View fleet configurations*
-+
-image::m3-resource-sync-16.png[link=self, window=blank, width=100%]
-+
-. Click *Next*
-+
-image::m3-resource-sync-17.png[link=self, window=blank, width=100%]
-+
-A *host configuration* named *drone-tracker-web-content* has been added. Let’s walk through what it does:
-+
-.. The *Source type* is set to `Git configuration`
-.. The configuration references the same repository created earlier: `user-repo`
-.. The `main` branch of the repository is used
-.. Content from the repository is written to the device at the following path: `/kiosk/content/flight-conditions-{{ .metadata.labels.weather }}`
-+
-image::m3-resource-sync-18.png[link=self, window=blank, width=100%]
-
-How does the `{{ .metadata.labels.weather}}` template variable work?
-
-Let's break it down.
-
-In this case, Edge Manager reads the value of a `weather` label applied to the device (which you will apply in a moment)
-
-For example: `weather=storm`
-
-How does this relate to the Git repository content?
-
-Here’s how it ties together:
-
-Switch back to your gitea browser tab and:
-
-. Expand the `kiosk` folder
-. Select the `content` folder
-. Note the three subfolders whose names end in: *clear*, *storm*, and *windy*
-+
-image::m3-resource-sync-19.png[link=self, window=blank, width=100%]
-+
-When Edge Manager instructs the device to write content from this Gitea location, it uses the device’s `weather` label value to select the matching folder.
-+
-That folder contains web content served by the NGINX application.
-
-Next, let’s examine the Fleet application specification.
-
-Return to your Edge Manager UI browser tab and scroll to the *Application workloads* section of the Fleet specification. Let’s walk through what this configuration is doing:
-
-. We’ve selected a *Quadlet application* as the application type. Earlier, in the `drone-fleet`, we deployed the drone cam as a *single-container application* pulled directly from quay.io. In this case, we are using a Quadlet application, which allows one or more containerized applications to be defined together
-. We’ve configured the *Definition source* as *Inline*, meaning the container definition is written directly into the Fleet specification rather than pulled from an OCI registry
-. We’ve assigned the application name `drone-tracker-app`
-. The contents of this Quadlet application will be written to a file named `drone-tracker.container` on the device
-
-image::m3-resource-sync-20.png[link=self, window=blank, width=100%]
-
-. Scroll down until the *Content* portion is visible
-. Click and drag the *Content* resize handle until the full contents are visible
-
-image::m3-resource-sync-21.png[link=self, window=blank, width=100%]
-
-This shows the full contents written to the inline Quadlet file, `drone-tracker.container`. Let’s walk through what’s happening:
-
-. The NGINX container *image* is pulled from `docker.io/library/nginx:1.25`. An *Exec* command starts NGINX, and a *PublishPort* of 8080 maps traffic to container port 80
-. The container uses a volume mounted at `/etc/drone-tracker`, which is where NGINX serves its web content. This content is written to disk via the Host Configuration specification examined earlier
-. Once you’ve completed the review, click Cancel to exit the wizard
-
-image::m3-resource-sync-22.png[link=self, window=blank, width=100%]
-
-=== Join gitea-fleet 
-
-Now for the fun part, let’s put this new Gitea-sourced fleet into action. We already have a device enrolled and ready, thanks to your earlier work.
-
-. Click *Devices*
-. Click *drone-01*
-+
-image::m3-drone-tracker-1.png[link=self, window=blank, width=100%]
-+
-. In the *Labels* section, click the *X* next to `fleet=lab` to remove the device from the `drone-fleet`
-+
-image::m3-drone-tracker-2.png[link=self, window=blank, width=100%]
-+
-Next, we will add two labels to the device. The first label will be the *weather* label:
-+
-Choose a value for the weather label: `clear`, `storm`, or `windy`
-+
-. Click *Add label* and add the weather label: `weather=`{your decision from above: clear, storm or windy}
-+
-NOTE: The following screenshot may not reflect your selected value (this is expected)
-+
-image::m3-drone-tracker-3.png[link=self, window=blank, width=100%]
-+
-Next, we will add the device to the Gitea resource-synced fleet by applying its device selector label:
-+
-. Click *Add label* and enter `fleet=gitea` 
-
-+
-.. Immediately after pressing Enter, the device joins the `gitea-fleet`
-.. The device enters an *Out-of-date* state because its current configuration does not yet match the Gitea fleet’s desired state
-+
-image::m3-drone-tracker-4.png[link=self, window=blank, width=100%]
-+
-Because the desired state and current state do not match, Edge Manager instructs the device to reconcile itself toward the desired state
-+
-. Note that the device enters an *Updating* state
-+
-image::m3-drone-tracker-5.png[link=self, window=blank, width=100%]
-+
-. After a short period, observe the following:
-+
-.. The device transitions to an *Up-to-date* state
-.. The *Disk pressure* warning is no longer present because the Gitea fleet does not include the custom disk resource monitor previously applied to the `drone-fleet`.
-.. A new (gitea) configuration *Source* is being tracked:  *drone-tracker-web-content*
-.. A new `drone-tracker-app` application is now *Running*, and the previous `drone-cam` application is no longer present
-+
-image::m3-drone-tracker-6.png[link=self, window=blank, width=100%]
-+
-. Scroll up and click *Terminal*
-+
-image::m3-drone-tracker-6.png[link=self, window=blank, width=100%]
-+
-. Let’s run a few read-only commands to observe the system state from this terminal.
-+
-.Change into the /etc/drone-tracker folder which was created via the gitea resource sync
-[source,sh,role=wrap execute,subs=attributes+]
-----
-cd /etc/drone-tracker
-----
-+
-.Perform a directory listing and note the content that was resource sync'd via the gitea respository
-[source,sh,role=wrap execute,subs=attributes+]
-----
-ls
-----
-+
-.Sample Output
-[source,text,role=wrap]
-----
-app.js  images  index.html  styles.css  weather.html
-----
-+
-.Examine the weather.html file
-[source,sh,role=wrap execute,subs=attributes+]
-----
-cat weather.html
-----
-+
-.Sample Output (note the Flight Conditions sub-header, this matches the `weather=` label you tagged the device with. Unless you chose `weather=storm`, your sample output will differ)
-[source,text,role=wrap]
-----
-<h1>Flight Conditions</h1>
-<h2>S T O R M</h2>
-----
-
-== Drone Tracker Application 
-
-. Return to your `Application is not available` tab and click refresh
-+
-image::m3-drone-tracker-app-1.png[link=self, window=blank, width=100%]
-+
-+
-. Click *View Flight Conditions*
-+
-image::m3-drone-tracker-app-2.png[link=self, window=blank, width=100%]
-+
-.. Note that the weather.html containing storm is being served up 
-.. Note that we have indicated that this content was injected via the gitea `flight-conditions-storm` folder
-+
-image::m3-drone-tracker-app-3.png[link=self, window=blank, width=100%]
-+
-
-The Drone Tracker app is now fully available thanks to our resource synched gitea content.
-
-++++
-<b style="font-size: 2em;">
-  <span style="color:red;">C</span>
-  <span style="color:orange;">o</span>
-  <span style="color:gold;">n</span>
-  <span style="color:green;">g</span>
-  <span style="color:blue;">r</span>
-  <span style="color:indigo;">a</span>
-  <span style="color:violet;">t</span>
-  <span style="color:red;">u</span>
-  <span style="color:orange;">l</span>
-  <span style="color:gold;">a</span>
-  <span style="color:green;">t</span>
-  <span style="color:blue;">i</span>
-  <span style="color:indigo;">o</span>
-  <span style="color:violet;">n</span>
-  <span style="color:red;">s</span>
-</b>
-++++
-
-You've done a great job at SliceOps Delivery Systems today!
-
-Before you decide if you want to work through an optional Extra Credit exercise, there is one last important thing we would like to show you.
-
-=== Desired State Configuration: Why It Matters
-
-Imagine that you have been asked to change the title of the Drone Tracker application.  
-
-A junior administrator (or even an experienced operator with decades of muscle memory might go directly to device and edit the web content in place). Let's follow that approach:
-
-. Return to the Device *Terminal* in the Edge Manager UI
-+
-.Change into the `/etc/drone-tracker` directory
-[source,sh,role=wrap execute,subs=attributes+]
-----
-cd /etc/drone-tracker
-----
-+
-.Open `index.html' for editing
-[source,sh,role=wrap execute,subs=attributes+]
-----
-vi index.html
-----
-+
-. Navigate to '*<h1>SliceOps Delivery Systems* ...</h1>' line and press `i` for insert 
-+
-. Replace `SliceOps Delivery Systems` with any company name of your choosing
-+
-. Press *ESC*, then type `:wq` and press *Enter* to save the file 
-+
-. Return to your `Drone Tracker` browser tab, click *Back to Tracker Map* and refresh the page
-
-Notice that the page header now reflects the company name you entered. The change was successful and is immediately visible in the Drone Tracker application.
-
-So what’s the problem with this approach?
-
-*Ask yourself this*: was this change made through the correct *desired state configuration* for the device?
-
-*Answer*: No, it was not.
-
-In fact, within a few minutes, you’ll notice the change automatically reverts back to *SliceOps Delivery Systems Drone Tracker*.
-
-This happens because the device agent periodically checks in and evaluates whether its current state matches the desired state. When it detects a mismatch, Edge Manager automatically works to self-heal the device back to the declared configuration.
-
-This is a powerful capability. Device self-healing can save organizations significant time and money by reducing manual intervention and avoiding costly truck rolls to remote edge locations. Edge Manager becomes the first line of remediation.
-
-The correct approach in this case would have been to edit the gitea content and let the Fleet Specification (desired state configuration) do the rest.
 
 [#labsummary]
 == Lab Summary 
