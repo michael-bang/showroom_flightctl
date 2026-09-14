@@ -1,18 +1,35 @@
 = 2. Edge Manager - Manage
 
-Your delivery drone has been successfully onboarded to Edge Manager and is operational. However, it is currently missing a critical application.
+Your device has been successfully onboarded to Edge Manager and is operational. However, we need to add an application and config to it to make it more than just a device.
 
-While we *could* edit this device individually and add the application directly, you have already pre-created a `drone-fleet` that defines the desired state configuration (including this application) for any device that joins the fleet.
+While we *could* edit this device individually and add the application directly, you can create a `lab-fleet` that defines the desired state configuration (including an application) for any device that joins the fleet.
 
 Rather than managing devices one at a time, we’ll use the fleet model to apply configuration consistently and at scale.
 
-*Quick check:*
-Do you remember how devices become associated with a fleet?
+[#fleetcreation]
+== Fleet Creation
 
-*Answer:*  
-By applying *device labels* that match the fleet’s *device selector*.
+Let's create a fleet that we can use to add the correct version of our operating system (image mode image), add an application, set the message of the day and have the fleet monitor
+a systemd service.
 
-Let’s do that next.
+. Return to your Edge Manager UI browser tab and Click *Fleets*
++
+image::m2-create-fleet-button.png[link=self, window=blank, width=100%]
++
+. Click on the *Create fleet* button
++
+. Name the fleet lab-fleet
+. Click on *Add label* under *Device selector* and write *fleet=lab-fleet* and press *Enter*.
++
+image::m2-create-fleet-page1.png[link=self, window=blank, width=100%]
++
+NOTE: You will see a message saying *There are no devices matching these labels*. When we enrolled our lab-srv1 device we didn't add any labels so this Fleet will not manage
+any devices yet. We will come back later to our lab-srv1 device and add the label so that it will be managed by this fleet.
++
+. Click *Next* to continue.
+
+
+
 
 [#fleetmembership]
 == Fleet Membership 
@@ -27,24 +44,24 @@ image::m3-join-fleet-1.png[link=self, window=blank, width=100%]
 +
 . Highlight `key=value`, type `fleet=lab` then press *Enter*
 +
-.. Observe that the device joins the `drone-fleet` almost immediately
+.. Observe that the device joins the `lab-fleet` almost immediately
 +
 image::m3-join-fleet-2.png[link=self, window=blank, width=100%]
 +
 [NOTE]
 ====
-The agent on the drone device has checked in. Because the device’s *current configuration* does not match the *desired state* defined by the fleet specification, Edge Manager automatically instructs the device to reconcile itself.
+The agent on the device has checked in. Because the device’s *current configuration* does not match the *desired state* defined by the fleet specification, Edge Manager automatically instructs the device to reconcile itself.
 
 This reconciliation is initiated by the device agent and occurs without manual intervention.
 ====
 +
-. Note that the device *Update status* changes from *Out-of-date* to *Updating*, indicating that the device is pulling and applying the `drone-cam` application defined by the fleet.
+. Note that the device *Update status* changes from *Out-of-date* to *Updating*, indicating that the device is pulling and applying the `Lab` application defined by the fleet.
 +
 image::m3-join-fleet-3.png[link=self, window=blank, width=100%]
 +
 . Scroll to the bottom of the page and observe:
 +
-.. The `drone-cam-app` application has been successfully provisioned and is in a *Running* state
+.. The `lab-app` application has been successfully provisioned and is in a *Running* state
 .. The `update-motd` configuration source is present and being tracked, indicating that system configuration content defined by the fleet is actively managed on the device
 .. The `chronyd.service` system service is being tracked and is currently *Enabled*, *Loaded*, and *Active (running)*
 +
@@ -66,7 +83,7 @@ cat /etc/motd
 Today is a good day to deliver pizza!
 ----
 +
-.Verify that the drone-cam container is running
+.Verify that the lab container is running
 [source,sh,role=wrap execute,subs=attributes+]
 ----
 podman ps -a 
@@ -79,7 +96,7 @@ CONTAINER ID  IMAGE                           COMMAND         CREATED        STA
 d5fbd7c5e120  quay.io/kenosborn/drone-cam:v1  node server.js  9 minutes ago  Up 9 minutes  0.0.0.0:8081->8081/tcp  systemd-drone-cam-app-233433-app
 ----
 +
-.Verify that the drone-cam image is present on the device
+.Verify that the lab image is present on the device
 [source,sh,role=wrap execute,subs=attributes+]
 ----
 podman images
@@ -105,274 +122,6 @@ image::m3-join-fleet-5.png[link=self, window=blank, width=100%]
 Great job!  You have successfully stood up a new SDS field location, and your virtual pizza delivery is on its way (somewhere in the Greek Islands, by the look of it).
 
 Now that this device is onboarded and enforcing fleet-defined state, we’ll use it to explore a few additional Edge Manager concepts.
-
-[#devicemonitoring]
-== Device Monitoring
-
-We briefly looked at device *System status* and *Resource status* earlier.
-
-Edge Manager currently reports the following device and fleet status states:
-
-image::m3-status-states-1.png[link=self, window=blank, width=100%]
-
-The default Resource status states (CPU, Disk, and Memory pressure) are informational and do not alert until they reach *Warning* or *Critical* levels. This design provides visibility without unnecessary alert noise.
-
-=== Custom Resource Monitor Creation
-
-Let’s configure a custom disk resource monitor and apply it to our fleet. To do so, we will use the `flightctl` CLI.
-
-Return to your lab manual and input the following commands in `Terminal 1`
-
-.Retrieve the fleet list
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl get fleet
-----
-.Sample Output (returns all fleets)
-[source,text,role=wrap]
-----
-NAME            OWNER   SELECTOR        VALID
-drone-fleet     <none>  fleet=lab       True
-----
-.Export the `drone-fleet` configuration to YAML
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl get fleet/drone-fleet -o yaml > update-fleet.yaml
-----
-.Edit the update-fleet.yaml file
-[source,sh,role=wrap execute,subs=attributes+]
-----
-vim update-fleet.yaml
-----
-
-. While reviewing the `spec:` section, note that this fleet specification now defines:
-* An *application* (`drone-cam-app`)
-* A *host configuration* source (`update-motd`)
-* A *systemd service* that must be present and running (`chronyd.service`)
-+
-Together, these entries define the desired state that Edge Manager continuously enforces for every device that matches this fleet.
-+
-image::m3-monitor-1.png[link=self, window=blank, width=100%]
-+
-. Use the down arrow key to position your cursor on the `status:` line
-. Press `i` to enter insert mode
-. Press `Enter` to create a new blank line
-. Press the up arrow once to move your cursor into the empty line above `status:`
-+
-image::m3-monitor-2.png[link=self, window=blank, width=100%]
-+
-[source,sh,role=execute,subs=attributes+]
-.Copy the following custom disk resource monitor YAML:
-----
-      resources:
-      - monitorType: Disk
-        samplingInterval: 5s
-        path: /sysroot
-        alertRules:
-        - severity: Warning
-          duration: 1m
-          percentage: 5
-          description: Disk space for /sysroot is >5% full for over 1m.
-        - severity: Critical
-          duration: 10m
-          percentage: 90
-          description: Disk space for /sysroot is >90% full over 10m.
-----
-. Paste this YAML snippet directly above the status: field in the fleet specification
-. Press `ESC` to exit insert mode
-. Type `:wq` and press `Enter` to save and exit the file
-+
-We have saved our modification, now let's apply it:
-+
-[source,sh,role=wrap execute,subs=attributes+]
-.Type or copy/paste the following command
-----
-flightctl apply -f update-fleet.yaml
-----
-+
-.Sample Output (returns all fleets)
-[source,text,role=wrap]
-----
-update-fleet.yaml: applying fleet/drone-fleet: 200 OK
-----
-
-While we wait for this to fully apply, let's examine what this custom disk resource monitor is doing:
-
-image::m3-monitor-3.png[link=self, window=blank, width=100%]
-
-. Specifies a `monitorType: Disk` and samples disk utilization on the `/sysroot` path every `5s`
-. Triggers a *Warning alert* if disk usage on `/sysroot` exceeds *5% for longer than 1 minute* (5% disk usage is not a realistic (real world) value; we're simply using this in order to generate an alert notification)
-. Triggers a *Critical* alert if disk usage on `/sysroot` exceeds *90% for longer than 10 minutes*, which more closely reflects a realistic production threshold.
-
-Return to your Edge Manager browser tab, and
-
-. Click *Details*
-. Observe that *Device Status* is now reporting `(!) Degraded`
-. Observe that *Disk Pressure* is now reporting `(!) Past threshold (5%)`
-. (Click each alert to view more details)
-
-image::m3-monitor-3.1.png[link=self, window=blank, width=100%]
-
-Edge Manager is now behaving exactly as expected, reporting that the device has entered a degraded state.
-
-The device is marked *Degraded* because a monitored resource (disk utilization) has exceeded its configured threshold.
-
-NOTE: Under the covers, Edge Manager uses AlertManager to evaluate resource monitors and generate alerts. These alerts can optionally be forwarded to external monitoring systems or SNMP trap destinations if desired.
-
-Let’s explore *Events* to see how Edge Manager records and surfaces this condition.
-
-. Click *Events*
-. Note that a Warning event has been captured, timestamped and associated with this device.
-. Click *Overview*
-
-image::m3-monitor-4.png[link=self, window=blank, width=100%]
-
-The Overview UI aggregates health and status signals across *all managed devices and fleets*
-
-. Note that Edge Manager is surfacing the disk utilization warning level 
-. Note that the `Device Status (?)` bubble is indicating 100% degraded (this is because we only have 1 device and that device is currently degraded)
-. Click *100% Degraded*
-
-image::m3-monitor-5.png[link=self, window=blank, width=100%]
-
-We are now in the devices view with a filter set for `Device status: Degraded'
-
-image::m3-monitor-6.png[link=self, window=blank, width=100%]
-
-(From here users could drill down on the device to further investigate - there is no need to do so now)
-
-=== CLI Exploration
-
-NOTE: The Edge Manager UI that we have been utilizing gets its content via the Edge Manager API service.  We can utilize the CLI to retrieve the same information.  
-
-.In your `Terminal 1` session issues the following command
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl get device
-----
-.Sample Output (your output name uid will be different than what is shown here)
-[source,text]
-----
-NAME                                                    ALIAS           OWNER                   SYSTEM          UPDATED       APPLICATIONS
-gvi4k18tlq2581mro8unh8f4dlkqoiqpe64lsq5v2d1f7d0cvfp0    drone-01        Fleet/drone-fleet       Degraded        UpToDate      Healthy
-----
-.Double-click the NAME uid value then right-click and copy to your clipboard, then issue this command
-[source,sh,role=wrap execute,subs=attributes+]
-----
-name={paste your clipboard value}
-----
-.Inspect the device yaml and note the presence of the same disk warning/degraded messages in the `status:` section
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl get device/$name -o yaml
-----
-.Sample Output (your output name uid will be different than what is shown here)
-[source,text]
-----
-NAME 
-<...>                                                   ALIAS           OWNER                   SYSTEM          UPDATED       APPLICATIONS
-  resources:
-    cpu: Healthy
-    disk: Warning
-    memory: Healthy
-  summary:
-    info: Disk utilization has reached a warning level.
-    status: Degraded
-<...>
-----
-.We can utilize the same Terminal (non-SSH) gRPC tunnel to access the device via cli
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl console device/$name
-----
-.Let's examine the device disk free space 
-[source,sh,role=wrap execute,subs=attributes+]
-----
-df -h
-----
-.Sample Output (note that /sysroot is ~10% used, this confirms why the disk resource monitor triggered: /sysroot exceeds the configured 5% warning threshold)
-[source,text]
-----
-Filesystem      Size  Used Avail Use% Mounted on
-devtmpfs        4.0M     0  4.0M   0% /dev
-tmpfs           940M   84K  940M   1% /dev/shm
-tmpfs           376M  708K  376M   1% /run
-efivarfs        256K   50K  202K  20% /sys/firmware/efi/efivars
-/dev/vda4        29G  2.6G   26G  10% /sysroot
-composefs       6.6M  6.6M     0 100% /
-tmpfs           940M     0  940M   0% /tmp
-/dev/vda3       960M  152M  809M  16% /boot
-/dev/vda2       501M  7.1M  494M   2% /boot/efi
-<...>
-----
-.Exit the remote console session
-[source,sh,role=wrap execute,subs=attributes+]
-----
-exit
-----
-.We can also issue remote commands without opening an interactive device console session
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl console device/$name -- df -h
-----
-.Sample Output 
-[source,text]
-----
-Filesystem      Size  Used Avail Use% Mounted on
-devtmpfs        4.0M     0  4.0M   0% /dev
-tmpfs           940M   84K  940M   1% /dev/shm
-tmpfs           376M  708K  376M   1% /run
-efivarfs        256K   50K  202K  20% /sys/firmware/efi/efivars
-/dev/vda4        29G  2.6G   26G  10% /sysroot
-composefs       6.6M  6.6M     0 100% /
-tmpfs           940M     0  940M   0% /tmp
-/dev/vda3       960M  152M  809M  16% /boot
-/dev/vda2       501M  7.1M  494M   2% /boot/efi
-<...>
-----
-
-=== Custom Resource Monitor Deletion
-
-When you created the Custom Resource Monitor earlier, you:
-
-. Exported the fleet specification to .yaml (`flightctl get fleet/drone-fleet -o yaml > update-fleet.yaml`)
-. Inserted the custom disk resource monitor yaml via `vim`, and 
-. Applied the updated fleet specification (`flightctl apply -f update-fleet.yaml`) 
-
-We can combine these three steps into one by utilizing the flighctl cli to directly edit our fleet template:
-
-. Edit the fleet directly using flightctl cli
-+
-[source,sh,role=wrap execute,subs=attributes+]
-----
-flightctl edit fleet/drone-fleet
-----
-+
-. Use the down arrow key to position your cursor on the `resources:` line 
-+
-image::m3-direct-cli-edit-1.png[link=self, window=blank, width=100%]
-+
-. Press `Shift+V` to enter _Visual Line_ mode
-+ 
-image::m3-direct-cli-edit-2.png[link=self, window=blank, width=100%]
-+
-. Use the down arrow key to highlight the entire custom resource monitor block, ending at `samplingInterval: 5s`
-+
-image::m3-direct-cli-edit-3.png[link=self, window=blank, width=100%]
-+
-. Type `d` to delete the custom resource monitor lines
-+
-image::m3-direct-cli-edit-4.png[link=self, window=blank, width=100%]
-+
-. Type `:wq` and press `Enter` to save your changes and exit 
-+
-.Sample Output 
-[source,text]
-----
-fleet/drone-fleet edited
-----
-
-While this section focused on fleet-level template edits, the same approaches can also be used for individual devices that are not members of a fleet.
 
 === Observability
 
