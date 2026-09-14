@@ -422,17 +422,20 @@ image::m3-resource-sync-9.png[link=self, window=blank, width=100%]
 We have just proven that editing the fleet YAML in Gitea automatically propagates changes to Edge Manager
 
 
-[#labsummary]
-== Lab Summary 
+[#module2summary]
+== Module 2 Summary
 
-On behalf of the entire Red Hat Edge Manager team, we would like to extend a heartfelt *THANK YOU* for taking the time to explore this lab today.
+Thank you for completing *Module 2*.
 
-We hope your time at SliceOps Delivery Systems has been an enjoyable and informative one.
+In this module, we have created a Fleet and added one device into it so we can manage it. Then we added MOTD configuration, an application and
+we set up a monitor of a systemd service. 
 
-=== Key Takeaways
+All of what we have done through out this module can also be done through git. This means that you can update your *Fleet* of devices 
+through updates of Git. There is an example available here:
 
-From a technology perspective, you learned how Edge Manager combines image-based OS management, GitOps workflows, fleet abstractions, and application lifecycle management into a single control plane that detects and remediates configuration drift through continuous desired-state enforcement.
+https://github.com/michael-bang/flightctl-demo/blob/main/simple/deployment/fleet.yaml
 
-From a business perspective, this approach reduces operational risk, minimizes manual intervention and enables consistent, policy-driven operations across distributed edge devices.
+=== Up Next
 
-Thank you, again - have a great day!
+In the next module, we’ll continue our test drive by working with the *Catalog* feature where we can provide applications with advanced updated paths. These catalog items can then 
+be added to *Fleets* or *Devices* directly. 

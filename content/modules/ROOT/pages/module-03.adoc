@@ -1,1 +1,191 @@
-= 3. Edge Manager - Catalog
+= 3. Edge Manager - Software Catalog
+
+In the prior module we saw how you can add configuration, applications and monitor systemd services. 
+Many organizations have people providing and managing the devices, other people in charge of the applications and then
+some people using the applications on the devices. 
+
+This is what the *sotware catalog* is for.
+
+Edge Manager uses a software catalog to organize and distribute versioned software components for edge devices. 
+The catalog provides a structured way to publish applications, system images, and other deployable content, track 
+their versions, and define upgrade paths between them.
+
+The catalog consists of two types of resources:
+
+*Catalog:* A named grouping of catalog items. For example, you might have a catalog called platform-apps for core platform 
+applications and another called infrastructure for infrastructure components.
+*CatalogItem:* A versioned entry within a catalog representing an application, system image, or other deployable component. 
+Each item defines its type, artifacts, configuration, and one or more versions with upgrade paths.
+
+In this module we will create a service catalog with two catalog items and show
+
+
+== Create the Software Catalog
+
+. Click *Software Catalog*
++
+image::m3-software-catalog.png[link=self, window=blank, width=100%]
++
+. Click *Create a new catalog item* to create the *Catalog* and the first item
++
+image::m3-create-software-catalog1.png[link=self, window=blank, width=100%]
++
+. Leave the catalog to *Default* and provide the name *awesome-app*.
+. In the *Short description* write
++
+[source,sh,role=execute,subs=attributes+]
+----
+This is the awesome app
+----
++
+. In *provider* add
++
+[source,sh,role=execute,subs=attributes+]
+----
+Red Hat
+----
++
+. In *Homepage* add
++
+[source,sh,role=execute,subs=attributes+]
+----
+https://redhat.com
+----
++
+. In *Documentation* add
++
+[source,sh,role=execute,subs=attributes+]
+----
+https://docs.redhat.com
+----
++
+image::m3-create-software-catalog2.png[link=self, window=blank, width=100%]
++
+. Press the *Next* button
+
+. In the *Type* select *Container*
+. In *Application Image* type
++
+[source,sh,role=execute,subs=attributes+]
+----
+quay.io/mbang1/awesome-app
+----
++
+image::m3-create-software-catalog3.png[link=self, window=blank, width=100%]
++
+. Click the *Next* button
+
+On the *Versions* page add the following
+
+. *Version*
++
+[source,sh,role=execute,subs=attributes+]
+----
+1.0.0
+----
++
+. *Channels*
++
+[source,sh,role=execute,subs=attributes+]
+----
+stable
+----
++
+. Click *Create "stable" channel
+. *Container reference*
++
+[source,sh,role=execute,subs=attributes+]
+----
+v1
+----
++
+. In the button of the page click *Add version*
+. *Version*
++
+[source,sh,role=execute,subs=attributes+]
+----
+2.0.0
+----
++
+. *Channels*
++
+[source,sh,role=execute,subs=attributes+]
+----
+stable
+----
++
+. *Container reference*
++
+[source,sh,role=execute,subs=attributes+]
+----
+v2
+----
++
+. *Replaces*
++
+[source,sh,role=execute,subs=attributes+]
+----
+1.0.0
+----
++
+. In the buttom of the page click *Add version*
+. *Version*
++
+[source,sh,role=execute,subs=attributes+]
+----
+1.1.0
+----
++
+. *Channels*
++
+[source,sh,role=execute,subs=attributes+]
+----
+stable
+----
++
+. *Container reference*
++
+[source,sh,role=execute,subs=attributes+]
+----
+v2
+----
++
+. *Replaces*
++
+[source,sh,role=execute,subs=attributes+]
+----
+1.1.0
+----
++
+. *Skips*
++
+[source,sh,role=execute,subs=attributes+]
+----
+1.0.0
+----
++
+. Click the *Next* button
++
+image::m3-create-software-catalog4.png[link=self, window=blank, width=100%]
++
+. Click the *Create* button
+
+Now we have the *Software Catalog* with 3 items.
+
+
+
+
+[#labsummary]
+== Lab Summary 
+
+On behalf of the entire Red Hat Edge Manager team, we would like to extend a heartfelt *THANK YOU* for taking the time to explore this lab today.
+
+We hope your time at SliceOps Delivery Systems has been an enjoyable and informative one.
+
+=== Key Takeaways
+
+From a technology perspective, you learned how Edge Manager combines image-based OS management, GitOps workflows, fleet abstractions, and application lifecycle management into a single control plane that detects and remediates configuration drift through continuous desired-state enforcement.
+
+From a business perspective, this approach reduces operational risk, minimizes manual intervention and enables consistent, policy-driven operations across distributed edge devices.
+
+Thank you, again - have a great day!
