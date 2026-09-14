@@ -2,7 +2,7 @@
 
 Your device has been successfully onboarded to Edge Manager and is operational. However, we need to add an application and config to it to make it more than just a device.
 
-While we *could* edit this device individually and add the application directly, you can create a `lab-fleet` that defines the desired state configuration (including an application) for any device that joins the fleet.
+While we *could* edit this device individually and add an application directly to it, you can also create a `lab-fleet` that defines the desired state configuration (including an application) for any device that joins the fleet.
 
 Rather than managing devices one at a time, we’ll use the fleet model to apply configuration consistently and at scale.
 
@@ -28,8 +28,63 @@ any devices yet. We will come back later to our lab-srv1 device and add the labe
 +
 . Click *Next* to continue.
 
+The first change we can do through the Fleet is to update the operating system with a version of an image mode image. This feature could
+be used to have one image installed on the device when you intially provision it eg. by your hardware dealer and then change it to the version
+with the needed tools through the Fleet configuration. In this case we will keep the same image as is already installed on the device.
 
+. Just leave the *System image* field empty
 
+You can add or change any files on the device. We will update the Message Of The Day on the device through the Fleet to have them all reflect that technology
+are managed through the Edge Manager.
+
+image::m2-create-fleet-image.png[link=self, window=blank, width=100%]
+
+. Click *Add configuration*
+. Put in *update-motd* in the empty field 
+. Select *Inline configuration* in the *Source type*
+. Set the file path on the device to */etc/motd*
+. In the content field enter *This system is managed by flightctl/rhem*
++
+image::m2-create-fleet-configuration.png[link=self, window=blank, width=100%]
++
+We will come back to adding an application later.
++
+. Leave the rest as it is and press the *Next* button
+
+The updates part of the Fleet configuration provides you with functionality to *Use basic configuration* which will roll out any change
+to the Fleet as soon as the edge manager agent does its next update. This is great if you want to roll out updates as soon as possible, but might
+not be what you want to do in production.
+If you unselect the *Use basic configuration* you can do more advanced configurations for your roll out. With the advanced configuration you can: *set roll out policies,
+set disruption budget and set update policies*
+
+The *set rollout policies* make it possible to select the order of the roll out meaning that you can have some device being updated first and only if
+that goes well continue to the rest. 
+
+image::m2-create-fleet-set-rollout-policies.png[link=self, window=blank, width=100%]
+
+The *set disruption budget* ensure that you will not update all devices at once and if problems occur having a minimum set of available running devices
+
+image::m2-create-fleet-set-disruption-budget.png[link=self, window=blank, width=100%]
+
+The *set update policies* make it possible to define a schedule for when the updates should be applied.
+
+image::m2-create-fleet-set-update-policies.png[link=self, window=blank, width=100%]
+
+We will stick to the *basic configuration* in this lab.
+
+image::m2-create-fleet-updates.png[link=self, window=blank, width=100%]
+
+. Click the *Next* button
+
+You can now review the *Fleet configuration*.
+
+image::m2-create-fleet-review.png[link=self, window=blank, width=100%]
+
+. Click the *Create fleet* button
+
+Configurations, you now have a Fleet that is ready to update the Message Of The Day on a large set of devices. 
+
+image::m2-lab-fleet-created.png[link=self, window=blank, width=100%]
 
 [#fleetmembership]
 == Fleet Membership 
