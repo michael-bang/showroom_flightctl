@@ -38,6 +38,7 @@ Essentially, it acts as the on-device "worker" that executes your fleet commands
 === Image Mode (bootc) image
 
 Edge Manager can currently manage devices that is running an Image Mode / Bootc based Operating System. These can be based on a number of different Linux based distributions.
+This limitation is being worked on and the version used in this lab show can work with non Image Mode / Bootc based devices.
 
 NOTE: Bootc is the upstream name and image mode is the Red Hat name for a Red Hat Enterprise Linux based OS that is declared like a container and running immutable. 
 
