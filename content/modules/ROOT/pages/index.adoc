@@ -36,10 +36,11 @@ image::lab-layout-1.png[link=self, window=blank, width=100%]
 == Key Concepts
 
 Device::
-A thing-a-ma-bob
+Is a physical or virtual machine capable of running an bootc / image mode operating system.
 
 Fleet::
-Several devices
+Is a collection of devices that can be managed together because of need of a commen version of the operating system, needing the same 
+application or otherwise makes logical sense to group together.
 
 
 == Related Projects
