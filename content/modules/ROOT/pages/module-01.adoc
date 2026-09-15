@@ -76,7 +76,7 @@ With Edge Manager fleet management, a single fleet template defines the desired 
 
 Log into the Edge Manager Web UI using the following information:
 
-Click link:https://rhem-on-rhel-webui-wksp-{guid}-{user}.{openshift_cluster_ingress_domain}[here,window=_blank] to access the Edge Manager Web UI (the link will open in a new browser tab)
+Click link:https://ui.flightctl.{openshift_cluster_ingress_domain}[here,window=_blank] to access the Edge Manager Web UI (the link will open in a new browser tab)
 
 . Enter *Username*: 
 +
@@ -89,7 +89,7 @@ Click link:https://rhem-on-rhel-webui-wksp-{guid}-{user}.{openshift_cluster_ingr
 +
 [source,sh,role=execute,subs=attributes+]
 ---- 
-redhat123
+{password}
 ----
 +
 . Click *Sign In*
