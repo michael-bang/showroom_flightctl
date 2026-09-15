@@ -216,7 +216,7 @@ Let's see if our Drone Cam is viewable now.
 
 . Return to your drone cam route browser window and click *Reload*
 
-image::m3-join-fleet-5.png[link=self, window=blank, width=100%]
+#image::m3-join-fleet-5.png[link=self, window=blank, width=100%]
 
 (You should now see the drone camera application load successfully)
 
