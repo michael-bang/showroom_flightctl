@@ -1,8 +1,9 @@
 = 3. Edge Manager - Software Catalog
 
 In the prior module we saw how you can add configuration, applications and monitor systemd services. 
+
 Many organizations have people providing and managing the devices, other people in charge of the applications and then
-some people using the applications on the devices. 
+some people putting the applications on the devices. 
 
 This is what the *sotware catalog* is for.
 
