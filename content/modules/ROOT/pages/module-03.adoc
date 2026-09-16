@@ -104,7 +104,7 @@ v1
 +
 [source,sh,role=execute,subs=attributes+]
 ----
-2.0.0
+1.1.0
 ----
 +
 . *Channels*
@@ -118,7 +118,7 @@ stable
 +
 [source,sh,role=execute,subs=attributes+]
 ----
-v2
+v1.1
 ----
 +
 . *Replaces*
@@ -133,7 +133,7 @@ v2
 +
 [source,sh,role=execute,subs=attributes+]
 ----
-1.1.0
+2.0.0
 ----
 +
 . *Channels*
@@ -171,16 +171,165 @@ image::m3-create-software-catalog4.png[link=self, window=blank, width=100%]
 . Click the *Create* button
 
 Now we have the *Software Catalog* with 3 items.
+It is possible to create some very advanced update paths for your application and have people add and update the application as need on
+a specific device or on all devices in a fleet.
 
+[#addingacatalogitem]
+=== Adding a catalog item to a fleet
 
+We will add the catalog item - awesome-app v1.0.0 to our lab-fleet and then we will do an upgrade first to version 1.1.0 and lastly to version 2.0.0
+
+. Open the *Fleets* page
+. Open the *lab-fleet*
+. Click on the *Catalog* tab
++
+image::m3-no-app-added-to-fleet.png[link=self, window=blank, width=100%]
++
+There is currently no software deployed to the fleet through the *Software catalog*
+. Scroll down a bit and click on the *awesome-app*
++
+image::m3-awesome-app-icon.png[link=self, window=blank, width=100%]
++
+Default it will chose the lastest version in this case version 2.0.0. We want to install version 1.0.0 s0
+. Click the drop down list where version 2.0.0 is shown and select 1.0.0
+. Click the *Deploy* button
+. Check that the *stable* and version *1.0.0* is selected
+. Click on the *Next* button
+. Give the *application* the name
++
+[source,sh,role=execute,subs=attributes+]
+----
+my-super-awesome-app
+----
++ 
+. Click on the *Next* button
+. Click on the *Deploy* button
++
+image::m3-update-message.png[link=self, window=blank, width=100%]
++
+. Click on *Return to fleet catalog*
++
+image::m3-fleet-catalog-status.png[link=self, window=blank, width=100%]
++
+You can see that the catalog item has been added to the fleet and you can see that there is an update available to it.
+Let go to the device and see the status of the application installed through the software catalog
+
+. Click on *Devices*
+. Click on the *edgesrv2*
++
+image::m3-edgesrv2-catalog-item-installed.png[link=self, window=blank, width=100%]
++
+You can see that the *my-super-awesome-app* is running
++
+. Click on the *Terminal* tab
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+sudo podman ps -a 
+----
++
+.Sample Output
+[source,text]
+----
+CONTAINER ID  IMAGE                          COMMAND               CREATED         STATUS         PORTS       NAMES
+469f68db489e  quay.io/mbang1/awesome-app:v1  nginx -g daemon o...  10 minutes ago  Up 10 minutes  80/tcp      systemd-my-super-awesome-app-321943-app
+----
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+sudo podman exec -it 469f68db489e curl localhost 
+----
++
+.Sample Output
+[source,text]
+----
+<html>
+  <head>
+    <title>Welcome to the awesome app</title>
+  </head>
+  <body>
+    <h1>Here is the awesome app</h1>
+  </body>
+</html>
+----
+As you can see the application is running. Now lets upgrade the application to version 2.0.0
+
+. Go to the *Fleets* page
+. Open the *lab-fleet*
+. Click on the *Catalog* tab
+. Click on the *Update available* button
++
+image::m3-update-catalog-item.png[link=self, window=blank, width=100%]
+The application update tree shows that we can upgrade to version 2.0.0 through 1.1.0.
+. Keep the defaults and click *Next*
+. Click on *Next* again
+. And click *Update*
+
+Now lets see if the catalog item has been updated on the fleet
+. Click *Return to fleet catalog*
+. Check that the *awesome-app* is at version 2.0.0
++
+image::m3-catalog-item-v2.png[link=self, window=blank, width=100%]
+
+Lets see how it looks on the device
+. Click on *Devices*
+. Click on the *edgesrv2*
++
+image::m3-edgesrv2-catalog-item-installed.png[link=self, window=blank, width=100%]
++
+You can see that the *my-super-awesome-app* is updated to version 2.0.0
++
+. Click on the *Terminal* tab
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+sudo podman ps -a 
+----
++
+.Sample Output
+[source,text]
+----
+CONTAINER ID  IMAGE                          COMMAND               CREATED        STATUS        PORTS       NAMES
+c994def422bc  quay.io/mbang1/awesome-app:v2  nginx -g daemon o...  5 minutes ago  Up 5 minutes  80/tcp      systemd-my-super-awesome-app-321943-app
+----
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+sudo podman exec -it c994def422bc curl localhost 
+----
++
+.Sample Output
+[source,text]
+----
+<html>
+  <head>
+    <title>Welcome to the awesome app version 2.0</title>
+  </head>
+  <body>
+    <h1>Here is the awesome app</h1>
+    <br>
+    Updated to version 2.0
+  </body>
+</html>
+----
+As you can see the application is now running version 2.
+
+You have now seen how you can use the Software Catalog to create and maintain applications (and other resources). These catalog items 
+can the be deployed to devices directly or at scale with a fleet.
+
+[#optionalassignment]
+== Optional assignment
+As you might remember this lab includes three devices. 
+
+There is one device *edgesrv3* that we haven't approved yet.
+You are welcome to try to approve this device and adopt it into the *lab-fleet*
+If you do that then you will see all of the configuration and applications be rolled out to the device.
 
 
 [#labsummary]
 == Lab Summary 
 
 On behalf of the entire Red Hat Edge Manager team, we would like to extend a heartfelt *THANK YOU* for taking the time to explore this lab today.
-
-We hope your time at SliceOps Delivery Systems has been an enjoyable and informative one.
 
 === Key Takeaways
 

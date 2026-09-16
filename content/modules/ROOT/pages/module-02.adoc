@@ -18,13 +18,13 @@ image::m2-create-fleet-button.png[link=self, window=blank, width=100%]
 +
 . Click on the *Create fleet* button
 +
-. Name the fleet lab-fleet
+. Name the fleet *lab-fleet*
 . Click on *Add label* under *Device selector* and write *fleet=lab-fleet* and press *Enter*.
 +
 image::m2-create-fleet-page1.png[link=self, window=blank, width=100%]
 +
-NOTE: You will see a message saying *There are no devices matching these labels*. When we enrolled our lab-srv1 device we didn't add any labels so this Fleet will not manage
-any devices yet. We will come back later to our lab-srv1 device and add the label so that it will be managed by this fleet.
+NOTE: You will see a message saying *There are no devices matching these labels*. When we enrolled our edgesrv2 device we didn't add any labels so this Fleet will not manage
+any devices yet. We will come back later to our edgesrv2 device and add the label so that it will be managed by this fleet.
 +
 . Click *Next* to continue.
 
@@ -174,17 +174,83 @@ NOTE: Sources are different applications and configurations that are synchronize
 Although updating *Message Of The Day* is great and shows that we can manage files at scale on a number of devices it would be great
 to be able to add an application to the device.
 
-Applications can be added through a Fleet in a number of ways. We will be adding a container based application to the device through the Fleet in 
-This section.
+Applications can be added through a Fleet in a number of ways. We will be adding a container based application to the device through the Fleet.
 
 NOTE: If you want to add a RPM based application to a device then you need to update the Image Mode image with the new application and distribute that through the operating system update
 part that we skipped in the prior section
 
-
-
-
+. Go back to *Fleets*
+. Click on the dots next to the *lab-fleet* and click *Edit fleet configurations*
+. Click on *Next* to go to the *Device template*
+. Go to the bottom and find the *Add application* part and click on the *+* sign next to it
+. Leave the *Application type* as *Single Container application*
+. In the *Application name* type
 +
-.Verify that the lab container is running
+[source,sh,role=wrap execute,subs=attributes+]
+----
+awesome-app 
+----
++
+. In tbe *Image* field add
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+quay.io/mbang1/awesome-app:v1 
+----
++
+. In the *Ports* section. *8090* in the hosts port and *80* in the containers port
+. Click on *Add* next to the *ports* you entered
++
+image::m2-add-container-app.png[link=self, window=blank, width=100%]
+
+Lets also monitor a service so we can monitor if it is running a expected
+. Go to the bottom of the page. Under *Tracked systemd services*
+. Click on *Add service*
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+flightctl-agent.service
+----
++
+. Click *Next*
+. Also click *Next* at the *Updates* page
++
+image::m2-add-app-review.png[link=self, window=blank, width=100%]
+
+On the *Details* page of the lab-fleet you will see the phases that the devices go through.
+After some time you should see a result like the following
++ 
+image::m2-fleet-overview[link=self, window=blank, width=100%]
+
+You can also see the status of the edgesrv2 by going to
+. Click on *Devices*
+. Click on *edgesrv2*
++
+image::m2-edgesrv2-status.png[link=self, window=blank, width=100%]
+
+In the *Applications* section you can see information and status about the container based application that we added to the device
+through the *lab-fleet*
++
+image::m2-edgesrv2-application-status.png[link=self, window=blank, width=100%]
+
+Here you can see the port that the *awesome-app* is listing on. The container is running as non-priviledge user account called flightctl.
+
+Last, but not least you can find the status of the flightctl-agent.service that you defined a monitoring for in the *lab-fleet*
++
+image::m2-edgesrv2-service-status.png[link=self, window=blank, width=100%]
+
+The service is *Enabled*, *Loaded* and *Active (running)* as expected.
+
+Lets verify that the application is actually running
+
+. Go to the *Terminal* tab
+. Enter
++
+[source,sh,role=wrap execute,subs=attributes+]
+----
+sudo su flightctl
+----
++
 [source,sh,role=wrap execute,subs=attributes+]
 ----
 podman ps -a 
@@ -193,36 +259,36 @@ podman ps -a
 .Sample Output
 [source,text]
 ----
-CONTAINER ID  IMAGE                           COMMAND         CREATED        STATUS        PORTS                   NAMES
-d5fbd7c5e120  quay.io/kenosborn/drone-cam:v1  node server.js  9 minutes ago  Up 9 minutes  0.0.0.0:8081->8081/tcp  systemd-drone-cam-app-233433-app
+CONTAINER ID  IMAGE                          COMMAND               CREATED         STATUS         PORTS                 NAMES
+32322696e696  quay.io/mbang1/awesome-app:v1  nginx -g daemon o...  22 minutes ago  Up 22 minutes  0.0.0.0:8090->80/tcp  systemd-awesome-app-flightctl-193403-app----
 ----
+
+
+Lets see if the application is working
+
+. Run the following command
 +
-.Verify that the lab image is present on the device
 [source,sh,role=wrap execute,subs=attributes+]
 ----
-podman images
+curl localhost:8090
 ----
 +
 .Sample Output
-[source,text,role=wrap]
+[source,text]
 ----
-REPOSITORY                   TAG         IMAGE ID      CREATED      SIZE
-quay.io/kenosborn/drone-cam  v1          7113794a637a  5 weeks ago  170 MB
+<html>
+  <head>
+    <title>Welcome to the awesome app</title>
+  </head>
+  <body>
+    <h1>Here is the awesome app</h1>
+  </body>
+</html>
 ----
 
 Perfect! It looks like the device has reconciled to the desired state defined by the fleet configuration (including system configuration and application deployment) with the only manual step in this lab being the application of the fleet selector label.
 
-Let's see if our Drone Cam is viewable now.
-
-. Return to your drone cam route browser window and click *Reload*
-
-#image::m3-join-fleet-5.png[link=self, window=blank, width=100%]
-
-(You should now see the drone camera application load successfully)
-
-Great job!  You have successfully stood up a new SDS field location, and your virtual pizza delivery is on its way (somewhere in the Greek Islands, by the look of it).
-
-Now that this device is onboarded and enforcing fleet-defined state, we’ll use it to explore a few additional Edge Manager concepts.
+Now that this device is onboarded and enforcing fleet-defined state.
 
 === Observability
 

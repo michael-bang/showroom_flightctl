@@ -120,7 +120,7 @@ You will see a page like the following.
 
 image::m1-device-list.png[link=self, window=blank, width=100%]
 
-. Click on the fist the *edgesrv2* device that are ready to be approved.
+. Click on the *edgesrv2* device that are ready to be approved.
 
 Here you can see information about the device that is ready to be imported. You can see the host name, ip address, the distribution and other information about the device. 
 
