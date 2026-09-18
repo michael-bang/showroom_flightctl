@@ -10,6 +10,8 @@ Bootc image are build using standard Podman tooling (Podman and a Containerfile)
 
 In most real-world scenarios, this image would be written to removable media and installed on physical edge hardware. In this lab, we use an OpenShift Virtualization virtual machine to represent the edge device, so we have created a QCOW2 disk image.
 
+=== Edge Manager device prerequisites
+
 image::m1-device-pre-reqs.png[link=self, window=blank]
 
 To onboard a device, Edge Manager requires the following prerequisites:

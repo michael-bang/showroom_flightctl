@@ -206,37 +206,39 @@ image::m2-add-container-app.png[link=self, window=blank, width=100%]
 Lets also monitor a service so we can monitor if it is running a expected
 . Go to the bottom of the page. Under *Tracked systemd services*
 . Click on *Add service*
-+
+
 [source,sh,role=wrap execute,subs=attributes+]
 ----
 flightctl-agent.service
 ----
-+
+
+
 . Click *Next*
 . Also click *Next* at the *Updates* page
-+
+
+
 image::m2-add-app-review.png[link=self, window=blank, width=100%]
 
 On the *Details* page of the lab-fleet you will see the phases that the devices go through.
 After some time you should see a result like the following
-+ 
-image::m2-fleet-overview[link=self, window=blank, width=100%]
+ 
+image::m2-fleet-overview.png[link=self, window=blank, width=100%]
 
 You can also see the status of the edgesrv2 by going to
 . Click on *Devices*
 . Click on *edgesrv2*
-+
+
 image::m2-edgesrv2-status.png[link=self, window=blank, width=100%]
 
 In the *Applications* section you can see information and status about the container based application that we added to the device
 through the *lab-fleet*
-+
+
 image::m2-edgesrv2-application-status.png[link=self, window=blank, width=100%]
 
 Here you can see the port that the *awesome-app* is listing on. The container is running as non-priviledge user account called flightctl.
 
 Last, but not least you can find the status of the flightctl-agent.service that you defined a monitoring for in the *lab-fleet*
-+
+
 image::m2-edgesrv2-service-status.png[link=self, window=blank, width=100%]
 
 The service is *Enabled*, *Loaded* and *Active (running)* as expected.
