@@ -60,6 +60,9 @@ We will come back to adding an application later.
 The updates part of the Fleet configuration provides you with functionality to *Use basic configuration* which will roll out any change
 to the Fleet as soon as the edge manager agent does its next update. This is great if you want to roll out updates as soon as possible, but might
 not be what you want to do in production.
+
+NOTE: We will use the *Use basic configuration* in this lab so no change needed, so this next part is for your information. 
+
 If you unselect the *Use basic configuration* you can do more advanced configurations for your roll out. With the advanced configuration you can: *set roll out policies,
 set disruption budget and set update policies*
 
